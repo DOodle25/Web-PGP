@@ -2,6 +2,9 @@
 
 A MERN-based PGP tool inspired by Kleopatra with browser-side cryptography using openpgp.js and optional server sync for encrypted key storage.
 
+Frontend : https://mango-bush-077d10b00.1.azurestaticapps.net
+Backend : web-pgp-backend-bgb0fxakaudhdufu.westindia-01.azurewebsites.net
+
 ## Features Implemented
 
 - PGP key generation (RSA)
