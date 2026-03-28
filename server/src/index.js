@@ -38,7 +38,20 @@ app.use(
       if (!origin) return callback(null, true);
       const normalizedOrigin = normalizeOrigin(origin);
       if (allowedOrigins.includes(normalizedOrigin))
-        return callback(null, true);
+        return callback(null, normalizedOrigin);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+  }),
+);
+app.options(
+  "*",
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      const normalizedOrigin = normalizeOrigin(origin);
+      if (allowedOrigins.includes(normalizedOrigin))
+        return callback(null, normalizedOrigin);
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
