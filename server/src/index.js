@@ -25,16 +25,20 @@ const limiter = rateLimit({
 
 app.use(helmet());
 app.use(limiter);
+const normalizeOrigin = (value) => value.replace(/\/+$/, "");
+
 const allowedOrigins = (process.env.CLIENT_ORIGIN || "")
   .split(",")
-  .map((value) => value.trim())
+  .map((value) => normalizeOrigin(value.trim()))
   .filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
+      const normalizedOrigin = normalizeOrigin(origin);
+      if (allowedOrigins.includes(normalizedOrigin))
+        return callback(null, true);
       return callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
