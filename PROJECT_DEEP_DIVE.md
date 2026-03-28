@@ -155,9 +155,9 @@ Key sharing is built around exporting and importing armored public keys:
 
 Recommended workflow for sharing:
 
-1) Export your public key and share it via a secure channel.
-2) Recipient imports the public key and can encrypt messages/files for you.
-3) If you must move a private key, export the encrypted private key blob and import it on another device after setting a vault password.
+1. Export your public key and share it via a secure channel.
+2. Recipient imports the public key and can encrypt messages/files for you.
+3. If you must move a private key, export the encrypted private key blob and import it on another device after setting a vault password.
 
 ## 5) Data Storage Locations
 
@@ -363,13 +363,13 @@ Values are intentionally omitted to avoid leaking secrets.
 
 ## 8) What the App Does End-to-End
 
-1) User signs up or logs in.
-2) User sets a vault password.
-3) User generates or imports keys.
-4) Private keys are encrypted locally and stored.
-5) User encrypts/decrypts text or files and optionally signs/verifies.
-6) If server sync is enabled, key metadata and encrypted private keys are stored in MongoDB.
-7) Audit logs are recorded for crypto actions and displayed in the UI.
+1. User signs up or logs in.
+2. User sets a vault password.
+3. User generates or imports keys.
+4. Private keys are encrypted locally and stored.
+5. User encrypts/decrypts text or files and optionally signs/verifies.
+6. If server sync is enabled, key metadata and encrypted private keys are stored in MongoDB.
+7. Audit logs are recorded for crypto actions and displayed in the UI.
 
 ## 9) Algorithms and Cryptographic Choices
 
