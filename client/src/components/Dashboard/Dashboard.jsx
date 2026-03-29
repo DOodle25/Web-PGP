@@ -42,7 +42,8 @@ export const Dashboard = ({
           <h3>Key status</h3>
           <p className="stat-value">{keyCount}</p>
           <span className="stat-label">
-            Active keys{expiringCount ? ` · ${expiringCount} expiring soon` : ""}
+            Active keys
+            {expiringCount ? ` · ${expiringCount} expiring soon` : ""}
           </span>
         </div>
         <div className="card stat-card">
@@ -56,7 +57,9 @@ export const Dashboard = ({
         </div>
         <div className="card stat-card">
           <h3>Mode</h3>
-          <p className="stat-value">{browserOnly ? "Local-only" : "Server sync"}</p>
+          <p className="stat-value">
+            {browserOnly ? "Local-only" : "Server sync"}
+          </p>
           <span className="stat-label">Audit entries: {auditCount}</span>
         </div>
       </div>

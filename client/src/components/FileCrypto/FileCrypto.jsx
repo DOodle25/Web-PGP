@@ -76,7 +76,9 @@ export const FileCrypto = ({ keys, vaultPassword }) => {
         <div className="card">
           <div className="card-header">
             <h3>Encrypt a file</h3>
-            <span className="hint">Select recipients and export a .pgp file.</span>
+            <span className="hint">
+              Select recipients and export a .pgp file.
+            </span>
           </div>
           <label className="dropzone">
             <input type="file" onChange={(e) => setFile(e.target.files[0])} />

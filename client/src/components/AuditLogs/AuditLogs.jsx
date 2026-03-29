@@ -4,7 +4,9 @@ export const AuditLogs = ({ entries = [] }) => {
       <div className="page-header">
         <div>
           <h2>Audit Logs</h2>
-          <p className="page-subtitle">Latest 100 events from your workspace.</p>
+          <p className="page-subtitle">
+            Latest 100 events from your workspace.
+          </p>
         </div>
       </div>
       <div className="card">

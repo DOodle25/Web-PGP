@@ -260,10 +260,7 @@ export const KeyManager = ({
                 Export public
               </button>
               {key.encryptedPrivateKey && (
-                <button
-                  className="ghost"
-                  onClick={() => exportPrivateKey(key)}
-                >
+                <button className="ghost" onClick={() => exportPrivateKey(key)}>
                   Export private
                 </button>
               )}

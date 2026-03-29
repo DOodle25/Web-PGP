@@ -125,7 +125,9 @@ export const SignVerify = ({ keys, vaultPassword }) => {
           <div className="card">
             <div className="card-header">
               <h3>Signature output</h3>
-              <span className="hint">Share this signature with the recipient.</span>
+              <span className="hint">
+                Share this signature with the recipient.
+              </span>
             </div>
             {signature ? (
               <textarea rows="12" value={signature} readOnly className="mono" />

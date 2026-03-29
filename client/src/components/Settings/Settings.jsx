@@ -9,7 +9,9 @@ export const Settings = ({
       <div className="page-header">
         <div>
           <h2>Settings</h2>
-          <p className="page-subtitle">Control security, privacy, and advanced options.</p>
+          <p className="page-subtitle">
+            Control security, privacy, and advanced options.
+          </p>
         </div>
       </div>
       <div className="card-grid settings-grid">
@@ -35,7 +37,9 @@ export const Settings = ({
               onChange={(e) => setAutoLockMinutes(Number(e.target.value))}
             />
           </label>
-          <p className="hint">Auto-lock clears decrypted key material from memory.</p>
+          <p className="hint">
+            Auto-lock clears decrypted key material from memory.
+          </p>
         </div>
         <div className="card">
           <div className="card-header">
@@ -50,7 +54,9 @@ export const Settings = ({
             <h3>Account</h3>
             <span className="hint">Passwords, 2FA, and sessions.</span>
           </div>
-          <p className="hint">Manage password and 2FA in the account section.</p>
+          <p className="hint">
+            Manage password and 2FA in the account section.
+          </p>
           <button>Manage account</button>
         </div>
         <div className="card">

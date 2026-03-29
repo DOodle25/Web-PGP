@@ -172,7 +172,10 @@ export const EncryptDecrypt = ({ keys, vaultPassword, mode }) => {
           </p>
         </div>
         <div className="toolbar">
-          <button className="ghost" onClick={() => setShowOutput((prev) => !prev)}>
+          <button
+            className="ghost"
+            onClick={() => setShowOutput((prev) => !prev)}
+          >
             {showOutput ? "Hide output" : "Show output"}
           </button>
         </div>
@@ -193,7 +196,9 @@ export const EncryptDecrypt = ({ keys, vaultPassword, mode }) => {
                   value={selectedRecipients}
                   onChange={(e) =>
                     setSelectedRecipients(
-                      Array.from(e.target.selectedOptions).map((opt) => opt.value),
+                      Array.from(e.target.selectedOptions).map(
+                        (opt) => opt.value,
+                      ),
                     )
                   }
                   title="Choose public keys allowed to decrypt this message."
@@ -253,7 +258,9 @@ export const EncryptDecrypt = ({ keys, vaultPassword, mode }) => {
                 </>
               )}
             </div>
-            <p className="hint">Encrypted output clears automatically after 5 minutes.</p>
+            <p className="hint">
+              Encrypted output clears automatically after 5 minutes.
+            </p>
             <div className="actions">
               <button onClick={handleEncrypt}>Encrypt</button>
               <button className="ghost" onClick={() => setPlaintext("")}>
@@ -270,17 +277,29 @@ export const EncryptDecrypt = ({ keys, vaultPassword, mode }) => {
               <div className="form-grid">
                 <label>
                   Ciphertext
-                  <textarea rows="8" value={ciphertext} readOnly className="mono" />
+                  <textarea
+                    rows="8"
+                    value={ciphertext}
+                    readOnly
+                    className="mono"
+                  />
                 </label>
                 {signature && (
                   <label>
                     Detached signature
-                    <textarea rows="6" value={signature} readOnly className="mono" />
+                    <textarea
+                      rows="6"
+                      value={signature}
+                      readOnly
+                      className="mono"
+                    />
                   </label>
                 )}
               </div>
             ) : (
-              <p className="hint">Output hidden. Use the toggle to reveal it.</p>
+              <p className="hint">
+                Output hidden. Use the toggle to reveal it.
+              </p>
             )}
           </div>
         </div>
@@ -291,7 +310,9 @@ export const EncryptDecrypt = ({ keys, vaultPassword, mode }) => {
           <div className="card">
             <div className="card-header">
               <h3>Decrypt</h3>
-              <span className="hint">Paste ciphertext and select your key.</span>
+              <span className="hint">
+                Paste ciphertext and select your key.
+              </span>
             </div>
             <div className="form-grid">
               <label>
@@ -365,7 +386,9 @@ export const EncryptDecrypt = ({ keys, vaultPassword, mode }) => {
                 </label>
               )}
             </div>
-            <p className="hint">Key passphrase is separate from your vault password.</p>
+            <p className="hint">
+              Key passphrase is separate from your vault password.
+            </p>
             <div className="actions">
               <button onClick={handleDecrypt}>Decrypt</button>
               <button className="ghost" onClick={() => setCiphertext("")}>
@@ -376,7 +399,9 @@ export const EncryptDecrypt = ({ keys, vaultPassword, mode }) => {
           <div className="card">
             <div className="card-header">
               <h3>Decrypted output</h3>
-              <span className="hint">Plaintext appears here after decrypting.</span>
+              <span className="hint">
+                Plaintext appears here after decrypting.
+              </span>
             </div>
             {showOutput ? (
               <div className="form-grid">
@@ -397,7 +422,9 @@ export const EncryptDecrypt = ({ keys, vaultPassword, mode }) => {
                 )}
               </div>
             ) : (
-              <p className="hint">Output hidden. Use the toggle to reveal it.</p>
+              <p className="hint">
+                Output hidden. Use the toggle to reveal it.
+              </p>
             )}
           </div>
         </div>

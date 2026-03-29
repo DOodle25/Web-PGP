@@ -18,7 +18,8 @@
 .app {
   min-height: 100vh;
   color: var(--text);
-  background: radial-gradient(circle at 20% 20%, #ffffff 0%, transparent 35%),
+  background:
+    radial-gradient(circle at 20% 20%, #ffffff 0%, transparent 35%),
     radial-gradient(circle at 80% 10%, #e8f2ff 0%, transparent 50%),
     var(--ink-900);
 }
@@ -107,6 +108,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  overflow-y: auto;
+  max-height: calc(100vh - 76px);
 }
 
 .sidebar.collapsed {
@@ -126,7 +129,9 @@
   border: none;
   cursor: pointer;
   font-size: 0.95rem;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .nav-icon {
@@ -151,6 +156,15 @@
   display: flex;
   flex-direction: column;
   gap: 1.6rem;
+}
+
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.25);
+  border: none;
+  z-index: 4;
+  display: none;
 }
 
 .page-header {
@@ -310,7 +324,9 @@ button {
   background: var(--accent);
   cursor: pointer;
   font-weight: 600;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 button:hover {
@@ -646,6 +662,30 @@ button.danger {
 
   .layout.collapsed {
     grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 76px;
+    left: 0;
+    height: calc(100vh - 76px);
+    width: min(82vw, 300px);
+    transform: translateX(-110%);
+    transition: transform 0.25s ease;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.2);
+    z-index: 6;
+  }
+
+  .layout.collapsed .sidebar {
+    transform: translateX(-110%);
+  }
+
+  .layout:not(.collapsed) .sidebar {
+    transform: translateX(0);
+  }
+
+  .sidebar-backdrop {
+    display: block;
   }
 }
 

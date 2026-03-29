@@ -404,6 +404,14 @@ function App() {
         </div>
       </header>
 
+      {!sidebarCollapsed && (
+        <button
+          className="sidebar-backdrop"
+          type="button"
+          aria-label="Close navigation"
+          onClick={() => setSidebarCollapsed(true)}
+        />
+      )}
       <div className={`layout ${sidebarCollapsed ? "collapsed" : ""}`}>
         <aside className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
           {navigation.map((item) => (
