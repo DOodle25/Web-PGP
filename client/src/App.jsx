@@ -8,6 +8,7 @@ import { FileCrypto } from "./components/FileCrypto/FileCrypto";
 import { AuditLogs } from "./components/AuditLogs/AuditLogs";
 import { Settings } from "./components/Settings/Settings";
 import { AuthPanel } from "./components/Auth/AuthPanel";
+import { ExtensionSetup } from "./components/ExtensionSetup/ExtensionSetup";
 import { api } from "./services/api";
 import {
   clearToken,
@@ -78,6 +79,7 @@ function App() {
       { id: "sign", label: "Sign/Verify", icon: "🖊️" },
       { id: "files", label: "Files", icon: "📁" },
       { id: "audit", label: "Audit Logs", icon: "🧾" },
+      { id: "extension", label: "Gmail Extension", icon: "🧩" },
       { id: "account", label: "Account", icon: "👤" },
       { id: "settings", label: "Settings", icon: "⚙️" },
     ],
@@ -471,6 +473,7 @@ function App() {
             <FileCrypto keys={keys} vaultPassword={vaultPassword} />
           )}
           {activeView === "audit" && <AuditLogs entries={auditLogs} />}
+          {activeView === "extension" && <ExtensionSetup />}
           {activeView === "account" && (
             <AuthPanel
               email={email}

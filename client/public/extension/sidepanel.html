@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web-PGP</title>
+    <link rel="stylesheet" href="sidepanel.css" />
+  </head>
+  <body>
+    <header class="panel-header">
+      <div>
+        <h1>Web-PGP</h1>
+        <p>Encrypt in Web-PGP and insert into Gmail.</p>
+      </div>
+      <button id="refreshDraft" class="ghost">Load draft</button>
+    </header>
+
+    <section class="panel">
+      <h2>Web-PGP workspace</h2>
+      <iframe id="webpgpFrame" title="Web-PGP"></iframe>
+      <button id="openWebpgp" class="ghost">Open Web-PGP in new tab</button>
+    </section>
+
+    <section class="panel">
+      <h2>Encrypted text</h2>
+      <textarea id="encryptedText" rows="6" placeholder="Paste encrypted text here"></textarea>
+      <div class="actions">
+        <button id="insertEncrypted">Insert into Gmail</button>
+        <button id="copyDraft" class="ghost">Copy draft</button>
+      </div>
+      <p id="draftStatus" class="hint"></p>
+    </section>
+
+    <script src="sidepanel.js"></script>
+  </body>
+</html>
