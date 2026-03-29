@@ -9,8 +9,7 @@ const EXTENSION_FILES = [
   "sidepanel.js",
   "sidepanel.css",
 ];
-const JSZIP_URL =
-  "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js";
+const JSZIP_URL = "https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js";
 
 export const ExtensionSetup = () => {
   const [copied, setCopied] = useState(false);
@@ -73,7 +72,8 @@ export const ExtensionSetup = () => {
         <div>
           <h2>Gmail Extension Setup</h2>
           <p className="page-subtitle">
-            Install the Web-PGP extension in Chrome/Edge and enable it for Gmail.
+            Install the Web-PGP extension in Chrome/Edge and enable it for
+            Gmail.
           </p>
         </div>
       </div>
@@ -99,7 +99,8 @@ export const ExtensionSetup = () => {
           <li>Open Gmail and click the Web-PGP button.</li>
         </ol>
         <p className="hint">
-          Browser stores require publishing to the Chrome Web Store or Edge Add-ons.
+          Browser stores require publishing to the Chrome Web Store or Edge
+          Add-ons.
         </p>
       </div>
 

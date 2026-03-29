@@ -4,9 +4,13 @@
   "version": "0.1.0",
   "description": "Encrypt and insert messages in Gmail using Web-PGP.",
   "permissions": ["storage", "sidePanel", "tabs", "activeTab", "scripting"],
-  "host_permissions": ["https://mail.google.com/*"],
+  "host_permissions": [
+    "https://mail.google.com/*",
+    "https://web-pgp-backend-bgb0fxakaudhdufu.westindia-01.azurewebsites.net/*"
+  ],
   "action": {
-    "default_title": "Web-PGP"
+    "default_title": "Web-PGP",
+    "default_popup": "popup.html"
   },
   "background": {
     "service_worker": "background.js"
@@ -22,6 +26,6 @@
     "default_path": "sidepanel.html"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; frame-src https://mango-bush-077d10b00.1.azurestaticapps.net/;"
+    "extension_pages": "script-src 'self'; object-src 'self'; frame-src https://mango-bush-077d10b00.1.azurestaticapps.net/; connect-src https://web-pgp-backend-bgb0fxakaudhdufu.westindia-01.azurewebsites.net https://mango-bush-077d10b00.1.azurestaticapps.net;"
   }
 }

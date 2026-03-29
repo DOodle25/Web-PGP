@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Web-PGP</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="panel-header">
+      <div>
+        <h1>Web-PGP</h1>
+        <p>Login to access keys and insert encrypted text.</p>
+      </div>
+      <button id="openWebpgp" class="ghost">Open Web-PGP</button>
+    </header>
+
+    <section class="panel" id="authPanel">
+      <h2>Sign in</h2>
+      <input id="email" type="email" placeholder="Email" />
+      <input id="password" type="password" placeholder="Password" />
+      <div class="actions">
+        <button id="login">Login</button>
+        <button id="logout" class="ghost">Logout</button>
+      </div>
+      <p id="authStatus" class="hint"></p>
+    </section>
+
+    <section class="panel">
+      <h2>Keys</h2>
+      <div id="keysList" class="keys-list"></div>
+      <p class="hint">Keys are fetched from your Web-PGP account.</p>
+    </section>
+
+    <section class="panel">
+      <h2>Encrypted text</h2>
+      <textarea id="encryptedText" rows="6" placeholder="Paste encrypted text here"></textarea>
+      <div class="actions">
+        <button id="insertEncrypted">Insert into Gmail</button>
+      </div>
+      <p id="insertStatus" class="hint"></p>
+    </section>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

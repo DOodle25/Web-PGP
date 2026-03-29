@@ -32,12 +32,19 @@ const allowedOrigins = (process.env.CLIENT_ORIGIN || "")
   .map((value) => normalizeOrigin(value.trim()))
   .filter(Boolean);
 
+const allowedExtensionOrigins = (process.env.EXTENSION_ORIGIN || "")
+  .split(",")
+  .map((value) => normalizeOrigin(value.trim()))
+  .filter(Boolean);
+
 app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
       const normalizedOrigin = normalizeOrigin(origin);
       if (allowedOrigins.includes(normalizedOrigin))
+        return callback(null, normalizedOrigin);
+      if (allowedExtensionOrigins.includes(normalizedOrigin))
         return callback(null, normalizedOrigin);
       return callback(new Error("Not allowed by CORS"));
     },
@@ -51,6 +58,8 @@ app.options(
       if (!origin) return callback(null, true);
       const normalizedOrigin = normalizeOrigin(origin);
       if (allowedOrigins.includes(normalizedOrigin))
+        return callback(null, normalizedOrigin);
+      if (allowedExtensionOrigins.includes(normalizedOrigin))
         return callback(null, normalizedOrigin);
       return callback(new Error("Not allowed by CORS"));
     },
