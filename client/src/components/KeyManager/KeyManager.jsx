@@ -14,6 +14,7 @@ export const KeyManager = ({
   onAddKey,
   onDeleteKey,
   onUpdateKey,
+  onToggleStorage,
   vaultPassword,
   canSync,
 }) => {
@@ -192,11 +193,117 @@ export const KeyManager = ({
     return { label: "Imported", tone: "warning" };
   };
 
+  const onlineKeys = keys.filter((key) => key.storageMode === "server");
+  const offlineKeys = keys.filter((key) => key.storageMode !== "server");
+
+  const renderKeyList = (items, emptyCopy) => (
+    <div className="key-list">
+      {items.length === 0 && <p className="hint">{emptyCopy}</p>}
+      {items.map((key) => {
+        const badge = statusBadge(key);
+        const isOnline = key.storageMode === "server";
+        return (
+          <article key={key.id} className="key-card">
+            <div className="key-card-header">
+              <input
+                className="inline-input key-title"
+                value={labelEdits[key.id] ?? key.label ?? ""}
+                onChange={(e) =>
+                  setLabelEdits((prev) => ({
+                    ...prev,
+                    [key.id]: e.target.value,
+                  }))
+                }
+              />
+              <div className="key-badges">
+                <span className={`badge ${badge.tone}`}>{badge.label}</span>
+                <span
+                  className={`pill ${isOnline ? "pill-online" : "pill-offline"}`}
+                >
+                  {isOnline ? "Online" : "Offline"}
+                </span>
+              </div>
+            </div>
+            <div className="key-meta">
+              <span>Owner: {key.owner || "Unknown"}</span>
+              <span>Usage: {key.usage || "Encrypt"}</span>
+              <span>
+                Strength: {strengthCopy(key.rsaBits, key.algorithm || "RSA")}
+              </span>
+              {key.expiresAt && (
+                <span>
+                  Expires: {new Date(key.expiresAt).toLocaleDateString()}
+                </span>
+              )}
+            </div>
+            <div className="key-meta">
+              <span className="mono">{key.fingerprint}</span>
+              <button
+                className="ghost"
+                onClick={() => navigator.clipboard.writeText(key.fingerprint)}
+              >
+                Copy fingerprint
+              </button>
+            </div>
+            <div className="key-actions">
+              <button
+                className="ghost"
+                onClick={() =>
+                  onUpdateKey(key.id, {
+                    label: labelEdits[key.id] ?? key.label,
+                  })
+                }
+              >
+                Save label
+              </button>
+              <button className="ghost" onClick={() => exportPublicKey(key)}>
+                Export public
+              </button>
+              {key.encryptedPrivateKey && (
+                <button
+                  className="ghost"
+                  onClick={() => exportPrivateKey(key)}
+                >
+                  Export private
+                </button>
+              )}
+              <button
+                className="ghost"
+                onClick={() => {
+                  if (window.prompt("Type REVOKE to confirm.") === "REVOKE") {
+                    onUpdateKey(key.id, { trustLevel: "revoked" });
+                  }
+                }}
+              >
+                Revoke
+              </button>
+              <button
+                className="ghost"
+                onClick={() => onToggleStorage(key.id)}
+                disabled={!canSync}
+              >
+                {isOnline ? "Move offline" : "Move online"}
+              </button>
+              <button className="danger" onClick={() => handleDelete(key.id)}>
+                Delete
+              </button>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  );
+
   return (
-    <section className="panel">
-      <div className="panel-header">
-        <h2>Key Management</h2>
-        <div className="actions">
+    <section className="panel page keys-panel">
+      <div className="page-header">
+        <div>
+          <h2>Key Management</h2>
+          <p className="page-subtitle">
+            Organize keys across online and offline storage.
+          </p>
+        </div>
+        <div className="toolbar">
           <button onClick={() => setMode("generate")}>+ Generate</button>
           <button onClick={() => setMode("import")} className="ghost">
             + Import
@@ -395,104 +502,27 @@ export const KeyManager = ({
       )}
 
       {mode === "list" && (
-        <div className="card">
-          {keys.length === 0 && (
-            <p className="hint">
-              No keys yet. Generate or import to get started.
-            </p>
-          )}
-          <ul className="list">
-            {keys.map((key) => {
-              const badge = statusBadge(key);
-              return (
-                <li key={key.id} className="list-item">
-                  <div>
-                    <input
-                      className="inline-input"
-                      value={labelEdits[key.id] ?? key.label ?? ""}
-                      onChange={(e) =>
-                        setLabelEdits((prev) => ({
-                          ...prev,
-                          [key.id]: e.target.value,
-                        }))
-                      }
-                    />
-                    <div className="meta">
-                      <span>Key owner: {key.owner || "Unknown"}</span>
-                      <span>Usage: {key.usage || "Encrypt"}</span>
-                      <span>
-                        Key strength:{" "}
-                        {strengthCopy(key.rsaBits, key.algorithm || "RSA")}
-                      </span>
-                      <span>Storage: {key.storageMode || "local"}</span>
-                      {key.expiresAt && (
-                        <span>
-                          Expires:{" "}
-                          {new Date(key.expiresAt).toLocaleDateString()}
-                        </span>
-                      )}
-                    </div>
-                    <div className="meta">
-                      <span className="mono">{key.fingerprint}</span>
-                      <button
-                        className="ghost"
-                        onClick={() =>
-                          navigator.clipboard.writeText(key.fingerprint)
-                        }
-                      >
-                        Copy fingerprint
-                      </button>
-                    </div>
-                  </div>
-                  <div className="actions">
-                    <span className={`badge ${badge.tone}`}>{badge.label}</span>
-                    <button
-                      className="ghost"
-                      onClick={() =>
-                        onUpdateKey(key.id, {
-                          label: labelEdits[key.id] ?? key.label,
-                        })
-                      }
-                    >
-                      Save label
-                    </button>
-                    <button
-                      className="ghost"
-                      onClick={() => exportPublicKey(key)}
-                    >
-                      Export public
-                    </button>
-                    {key.encryptedPrivateKey && (
-                      <button
-                        className="ghost"
-                        onClick={() => exportPrivateKey(key)}
-                      >
-                        Export private
-                      </button>
-                    )}
-                    <button
-                      className="ghost"
-                      onClick={() => {
-                        if (
-                          window.prompt("Type REVOKE to confirm.") === "REVOKE"
-                        ) {
-                          onUpdateKey(key.id, { trustLevel: "revoked" });
-                        }
-                      }}
-                    >
-                      Revoke
-                    </button>
-                    <button
-                      className="danger"
-                      onClick={() => handleDelete(key.id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+        <div className="keys-columns">
+          <section className="keys-column">
+            <div className="keys-column-header">
+              <div>
+                <h3>Online keys</h3>
+                <p className="hint">Stored in your account for sync.</p>
+              </div>
+              <span className="badge info">{onlineKeys.length}</span>
+            </div>
+            {renderKeyList(onlineKeys, "No online keys yet.")}
+          </section>
+          <section className="keys-column">
+            <div className="keys-column-header">
+              <div>
+                <h3>Offline keys</h3>
+                <p className="hint">Stored only in this browser.</p>
+              </div>
+              <span className="badge muted">{offlineKeys.length}</span>
+            </div>
+            {renderKeyList(offlineKeys, "No offline keys yet.")}
+          </section>
         </div>
       )}
 

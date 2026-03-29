@@ -5,11 +5,19 @@ export const Settings = ({
   setAutoLockMinutes,
 }) => {
   return (
-    <section className="panel">
-      <h2>Settings</h2>
-      <div className="grid">
+    <section className="panel page">
+      <div className="page-header">
+        <div>
+          <h2>Settings</h2>
+          <p className="page-subtitle">Control security, privacy, and advanced options.</p>
+        </div>
+      </div>
+      <div className="card-grid settings-grid">
         <div className="card">
-          <h3>Security</h3>
+          <div className="card-header">
+            <h3>Security</h3>
+            <span className="hint">Lockdown and vault behavior.</span>
+          </div>
           <label className="toggle">
             <input
               type="checkbox"
@@ -27,25 +35,29 @@ export const Settings = ({
               onChange={(e) => setAutoLockMinutes(Number(e.target.value))}
             />
           </label>
-          <p className="hint">Keys lock automatically after inactivity.</p>
-          <p className="hint">
-            Auto-lock clears decrypted key material from memory.
-          </p>
+          <p className="hint">Auto-lock clears decrypted key material from memory.</p>
         </div>
         <div className="card">
-          <h3>Privacy</h3>
+          <div className="card-header">
+            <h3>Privacy</h3>
+            <span className="hint">Audit history and local data.</span>
+          </div>
           <button className="ghost">Clear audit logs</button>
           <p className="hint">Removes local history only.</p>
         </div>
         <div className="card">
-          <h3>Account</h3>
-          <p className="hint">
-            Manage password and 2FA in the account section.
-          </p>
+          <div className="card-header">
+            <h3>Account</h3>
+            <span className="hint">Passwords, 2FA, and sessions.</span>
+          </div>
+          <p className="hint">Manage password and 2FA in the account section.</p>
           <button>Manage account</button>
         </div>
         <div className="card">
-          <h3>Advanced</h3>
+          <div className="card-header">
+            <h3>Advanced</h3>
+            <span className="hint">Power-user defaults.</span>
+          </div>
           <label className="toggle">
             <input type="checkbox" />
             Show raw PGP blocks

@@ -15,10 +15,10 @@ const router = Router();
 const createSchema = z.object({
   body: z.object({
     publicKey: z.string().min(1),
-    encryptedPrivateKey: z.string().optional(),
+    encryptedPrivateKey: z.string().optional().nullable(),
     fingerprint: z.string().min(6),
     algorithm: z.string().min(1),
-    expiresAt: z.string().datetime().optional(),
+    expiresAt: z.string().datetime().optional().nullable(),
     trustLevel: z.string().optional(),
     label: z.string().optional(),
   }),

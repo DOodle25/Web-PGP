@@ -20,16 +20,23 @@ import {
 } from "./services/auth";
 import { createVaultVerifier, verifyVaultPassword } from "./utils/cryptoVault";
 
-const STORAGE_KEY = "kleo_keys";
+const OFFLINE_STORAGE_KEY = "kleo_keys_offline";
 const VAULT_VERIFIER_KEY = "kleo_vault_verifier";
 
-const loadKeys = () => {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  return stored ? JSON.parse(stored) : [];
+const loadOfflineKeys = () => {
+  const stored = localStorage.getItem(OFFLINE_STORAGE_KEY);
+  if (!stored) return [];
+  return JSON.parse(stored)
+    .filter((key) => key.storageMode !== "server")
+    .map((key) => ({
+      ...key,
+      storageMode: "local",
+    }));
 };
 
-const saveKeys = (keys) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(keys));
+const saveOfflineKeys = (keys) => {
+  const offline = keys.filter((key) => key.storageMode !== "server");
+  localStorage.setItem(OFFLINE_STORAGE_KEY, JSON.stringify(offline));
 };
 
 const loadVaultVerifier = () => {
@@ -42,9 +49,9 @@ const saveVaultVerifier = (payload) => {
 };
 
 function App() {
-  const [keys, setKeys] = useState(loadKeys());
+  const [keys, setKeys] = useState(loadOfflineKeys());
   const [vaultPassword, setVaultPassword] = useState("");
-  const [browserOnly, setBrowserOnly] = useState(true);
+  const [browserOnly, setBrowserOnly] = useState(false);
   const [token, setToken] = useState(getToken());
   const [sessionExpiresAt, setSessionExpiresAt] = useState(getExpiry());
   const [email, setEmail] = useState("");
@@ -57,6 +64,7 @@ function App() {
   const [unlockValue, setUnlockValue] = useState("");
   const [autoLockMinutes, setAutoLockMinutes] = useState(15);
   const [user, setUser] = useState(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const locked = !vaultPassword;
   const canSync = Boolean(token) && !browserOnly;
@@ -70,6 +78,7 @@ function App() {
       { id: "sign", label: "Sign/Verify", icon: "🖊️" },
       { id: "files", label: "Files", icon: "📁" },
       { id: "audit", label: "Audit Logs", icon: "🧾" },
+      { id: "account", label: "Account", icon: "👤" },
       { id: "settings", label: "Settings", icon: "⚙️" },
     ],
     [],
@@ -83,7 +92,7 @@ function App() {
   }, [keys]);
 
   useEffect(() => {
-    saveKeys(keys);
+    saveOfflineKeys(keys);
     if (keys.length) {
       setLastActivity(new Date().toLocaleString());
     }
@@ -116,16 +125,21 @@ function App() {
         const me = await api.me(token);
         setUser(me);
         const remoteKeys = await api.listKeys(token);
-        setKeys(
-          remoteKeys.map((key) => ({
-            id: key._id,
-            label: key.label,
-            publicKey: key.publicKey,
-            encryptedPrivateKey: key.encryptedPrivateKey,
-            fingerprint: key.fingerprint,
-            algorithm: key.algorithm,
-          })),
-        );
+        const onlineKeys = remoteKeys.map((key) => ({
+          id: key._id,
+          label: key.label,
+          publicKey: key.publicKey,
+          encryptedPrivateKey: key.encryptedPrivateKey,
+          fingerprint: key.fingerprint,
+          algorithm: key.algorithm,
+          storageMode: "server",
+        }));
+        setKeys((prev) => {
+          const offlineKeys = prev.filter(
+            (key) => key.storageMode !== "server",
+          );
+          return [...onlineKeys, ...offlineKeys];
+        });
       } catch (err) {
         setStatus(err.message);
       }
@@ -161,7 +175,7 @@ function App() {
   const handleAddKey = async (key) => {
     setKeys((prev) => [key, ...prev]);
     setLastActivity(new Date().toLocaleString());
-    const shouldSync = key.storageMode === "server" ? Boolean(token) : canSync;
+    const shouldSync = key.storageMode === "server" && canSync;
     if (shouldSync) {
       try {
         const saved = await api.saveKey(token, {
@@ -173,7 +187,9 @@ function App() {
         });
         setKeys((prev) =>
           prev.map((item) =>
-            item.id === key.id ? { ...item, id: saved._id } : item,
+            item.id === key.id
+              ? { ...item, id: saved._id, storageMode: "server" }
+              : item,
           ),
         );
       } catch (err) {
@@ -183,10 +199,11 @@ function App() {
   };
 
   const handleUpdateKey = async (id, updates) => {
+    const target = keys.find((key) => key.id === id);
     setKeys((prev) =>
       prev.map((item) => (item.id === id ? { ...item, ...updates } : item)),
     );
-    if (canSync) {
+    if (target?.storageMode === "server" && canSync) {
       try {
         await api.updateKey(token, id, updates);
       } catch (err) {
@@ -196,14 +213,70 @@ function App() {
   };
 
   const handleDeleteKey = async (id) => {
+    const target = keys.find((key) => key.id === id);
     setKeys((prev) => prev.filter((key) => key.id !== id));
     setLastActivity(new Date().toLocaleString());
-    if (!browserOnly && token) {
+    if (target?.storageMode === "server" && !browserOnly && token) {
       try {
         await api.deleteKey(token, id);
       } catch (err) {
         setStatus(err.message);
       }
+    }
+  };
+
+  const handleToggleKeyStorage = async (id) => {
+    const target = keys.find((key) => key.id === id);
+    if (!target) return;
+
+    if (target.storageMode === "server") {
+      if (!canSync) {
+        setStatus("Login to move keys offline.");
+        return;
+      }
+      try {
+        await api.deleteKey(token, id);
+        setKeys((prev) =>
+          prev.map((item) =>
+            item.id === id
+              ? {
+                  ...item,
+                  id: crypto.randomUUID(),
+                  storageMode: "local",
+                }
+              : item,
+          ),
+        );
+        setStatus("Key moved offline.");
+      } catch (err) {
+        setStatus(err.message);
+      }
+      return;
+    }
+
+    if (!canSync) {
+      setStatus("Login to move keys online.");
+      return;
+    }
+
+    try {
+      const saved = await api.saveKey(token, {
+        publicKey: target.publicKey,
+        encryptedPrivateKey: target.encryptedPrivateKey,
+        fingerprint: target.fingerprint,
+        algorithm: target.algorithm,
+        label: target.label,
+      });
+      setKeys((prev) =>
+        prev.map((item) =>
+          item.id === id
+            ? { ...item, id: saved._id, storageMode: "server" }
+            : item,
+        ),
+      );
+      setStatus("Key moved online.");
+    } catch (err) {
+      setStatus(err.message);
     }
   };
 
@@ -241,6 +314,7 @@ function App() {
     setToken(null);
     setSessionExpiresAt(null);
     setUser(null);
+    setKeys((prev) => prev.filter((key) => key.storageMode !== "server"));
     setStatus("Logged out.");
   };
 
@@ -294,14 +368,26 @@ function App() {
     <div className="app">
       <header className="topbar">
         <div className="brand">
+          <button
+            className="icon-button"
+            type="button"
+            onClick={() => setSidebarCollapsed((prev) => !prev)}
+            aria-pressed={sidebarCollapsed}
+            aria-label="Toggle navigation"
+          >
+            Menu
+          </button>
           <span className="logo">K</span>
           <div>
-            <strong>Web Kleopatra</strong>
-            <span className="muted">Workspace: Kleo Vault</span>
+            <strong>Web-PGP</strong>
+            <span className="muted">Workspace: Web-PGP Vault</span>
           </div>
         </div>
         <div className="topbar-actions">
-          <span className="muted">{user?.email || "Guest"}</span>
+          <div className="topbar-profile">
+            <span className="topbar-user">{user?.email || "Guest"}</span>
+            <span className="muted">Account</span>
+          </div>
           {sessionExpiresAt && (
             <span className="badge info">
               Expires in{" "}
@@ -318,16 +404,17 @@ function App() {
         </div>
       </header>
 
-      <div className="layout">
-        <aside className="sidebar">
+      <div className={`layout ${sidebarCollapsed ? "collapsed" : ""}`}>
+        <aside className={`sidebar ${sidebarCollapsed ? "collapsed" : ""}`}>
           {navigation.map((item) => (
             <button
               key={item.id}
               className={`nav-item ${activeView === item.id ? "active" : ""}`}
               onClick={() => setActiveView(item.id)}
+              title={item.label}
             >
-              <span>{item.icon}</span>
-              {item.label}
+              <span className="nav-icon">{item.icon}</span>
+              <span className="nav-label">{item.label}</span>
             </button>
           ))}
         </aside>
@@ -350,6 +437,7 @@ function App() {
               onAddKey={handleAddKey}
               onDeleteKey={handleDeleteKey}
               onUpdateKey={handleUpdateKey}
+              onToggleStorage={handleToggleKeyStorage}
               vaultPassword={vaultPassword}
               canSync={canSync}
             />
@@ -375,30 +463,30 @@ function App() {
             <FileCrypto keys={keys} vaultPassword={vaultPassword} />
           )}
           {activeView === "audit" && <AuditLogs entries={auditLogs} />}
+          {activeView === "account" && (
+            <AuthPanel
+              email={email}
+              password={password}
+              setEmail={setEmail}
+              setPassword={setPassword}
+              onLogin={handleLogin}
+              onRegister={handleRegister}
+              onLogout={handleLogout}
+              onLogoutAll={handleLogoutAll}
+              status={status}
+              user={user}
+              sessionExpiresAt={sessionExpiresAt}
+              locked={locked}
+              onUnlock={() => (locked ? setUnlockOpen(true) : handleUnlock())}
+            />
+          )}
           {activeView === "settings" && (
-            <section className="panel">
-              <AuthPanel
-                email={email}
-                password={password}
-                setEmail={setEmail}
-                setPassword={setPassword}
-                onLogin={handleLogin}
-                onRegister={handleRegister}
-                onLogout={handleLogout}
-                onLogoutAll={handleLogoutAll}
-                status={status}
-                user={user}
-                sessionExpiresAt={sessionExpiresAt}
-                locked={locked}
-                onUnlock={() => (locked ? setUnlockOpen(true) : handleUnlock())}
-              />
-              <Settings
-                browserOnly={browserOnly}
-                onToggleBrowserOnly={setBrowserOnly}
-                autoLockMinutes={autoLockMinutes}
-                setAutoLockMinutes={setAutoLockMinutes}
-              />
-            </section>
+            <Settings
+              browserOnly={browserOnly}
+              onToggleBrowserOnly={setBrowserOnly}
+              autoLockMinutes={autoLockMinutes}
+              setAutoLockMinutes={setAutoLockMinutes}
+            />
           )}
         </main>
       </div>

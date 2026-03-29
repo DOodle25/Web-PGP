@@ -63,10 +63,21 @@ export const FileCrypto = ({ keys, vaultPassword }) => {
   };
 
   return (
-    <section className="panel">
-      <h2>File Encryption</h2>
-      <div className="grid">
+    <section className="panel page">
+      <div className="page-header">
+        <div>
+          <h2>File Encryption</h2>
+          <p className="page-subtitle">
+            Encrypt and decrypt files locally before sharing.
+          </p>
+        </div>
+      </div>
+      <div className="split-grid">
         <div className="card">
+          <div className="card-header">
+            <h3>Encrypt a file</h3>
+            <span className="hint">Select recipients and export a .pgp file.</span>
+          </div>
           <label className="dropzone">
             <input type="file" onChange={(e) => setFile(e.target.files[0])} />
             <div>
@@ -99,9 +110,13 @@ export const FileCrypto = ({ keys, vaultPassword }) => {
               ))}
             </select>
           </label>
-          <button onClick={handleEncrypt}>Encrypt File</button>
+          <button onClick={handleEncrypt}>Encrypt file</button>
         </div>
         <div className="card">
+          <div className="card-header">
+            <h3>Decrypt a file</h3>
+            <span className="hint">Use your private key to unlock it.</span>
+          </div>
           <label>
             Private key
             <select
@@ -122,7 +137,7 @@ export const FileCrypto = ({ keys, vaultPassword }) => {
             value={keyPassphrase}
             onChange={(e) => setKeyPassphrase(e.target.value)}
           />
-          <button onClick={handleDecrypt}>Decrypt File</button>
+          <button onClick={handleDecrypt}>Decrypt file</button>
         </div>
       </div>
       {status && <p className="hint">{status}</p>}
