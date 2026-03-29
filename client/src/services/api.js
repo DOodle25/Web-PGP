@@ -1,7 +1,7 @@
 const API_URL = 
-"http://localhost:5000";
-  // import.meta.env.VITE_API_URL ||
-  // "https://web-pgp-backend-bgb0fxakaudhdufu.westindia-01.azurewebsites.net";
+// "http://localhost:5000";
+  import.meta.env.VITE_API_URL ||
+  "https://web-pgp-backend-bgb0fxakaudhdufu.westindia-01.azurewebsites.net";
 
 const request = async (path, { method = "GET", body, token } = {}) => {
   const headers = { "Content-Type": "application/json" };
